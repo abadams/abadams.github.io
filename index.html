@@ -44,7 +44,7 @@ background-color:white;
 <br><br>
 <table style="border: 30px solid white; width:850px;">
 <tr>
-<td colspan=2 align=center> 
+<td colspan=2 align=center>
 <h1>Andrew Adams</h1>
 </td>
 </tr><tr>
@@ -74,7 +74,7 @@ abadams&nbsp;AT&nbsp;csail.mit.edu<br>
 
 <tr><td><br><img src="paper_thumbs/agx.png" alt="AgX is the pseudo-chemical name given to silver halide agents used in film photography"></td><td><br>
 <a href="http://halide-lang.org/">Halide</a> <br>
-Writing fast image processing pipelines is hard, because you need to simultaneously optimize for parallelism and locality (memory bandwidth). This usually wrecks the modularity, portability, and readability of your code, because it involves fusing all your pipeline stages into one architecture-specific monolithic mess. Trying alternative optimizations is then very painful, because it requires rearranging huge chunks of code and then fixing the bugs you inevitably introduced. 
+Writing fast image processing pipelines is hard, because you need to simultaneously optimize for parallelism and locality (memory bandwidth). This usually wrecks the modularity, portability, and readability of your code, because it involves fusing all your pipeline stages into one architecture-specific monolithic mess. Trying alternative optimizations is then very painful, because it requires rearranging huge chunks of code and then fixing the bugs you inevitably introduced.
 <p>
 Halide makes it easier to explore possible optimizations by separating the specification of the algorithm from the specification of the "schedule", which defines what gets computed when and where it is stored. Halide is described in <a href="http://people.csail.mit.edu/jrk/halide12">this SIGGRAPH 2012 paper</a>. The compiler is open source, and can found found <a href="http://halide-lang.org">here</a>. We welcome contributions and bug reports.
 </td></tr>
@@ -113,10 +113,23 @@ If you like those, you may also enjoy my <a href="http://graphics.stanford.edu/~
 <p>
 <table style="border:none; border-spacing:10px;">
 
+<script type="text/javascript">
+function defocus_start() {document.getElementById("defocus_thumb").src="paper_thumbs/defocus.gif"}
+function defocus_stop() {document.getElementById("defocus_thumb").src="paper_thumbs/defocus_still.jpg"}
+</script>
+
+<tr onmouseout="defocus_stop()" onmouseover="defocus_start()" ><td><br><img src="paper_thumbs/defocus_still.jpg" id="defocus_thumb"></td><td><br>
+<a href="BarronCVPR2015.pdf">Fast Bilateral-Space Stereo for Synthetic Defocus</a><br>
+Jonathan T. Barron, Andrew Adams, YiChang Shih, Carlos Hernández<br>
+<em>CVPR 2015 (Oral Presentation)<em><br>
+<a href="BarronCVPR2015_supp.pdf">Supplemental Material</a><br>
+<br>
+</td></tr>
+
 <tr><td><br><img src="paper_thumbs/sculpt.jpg"></td><td><br>
 <u>Sculpting by Numbers</u><br>
 Alec Rivers, Andrew Adams, Fredo Durand<br>
-<em>Proc. ACM SIGGRAPH Asia 2012<em><br>
+<em>ACM SIGGRAPH Asia 2012<em><br>
 <br>
 </td></tr>
 
@@ -124,7 +137,7 @@ Alec Rivers, Andrew Adams, Fredo Durand<br>
 <a href="http://people.csail.mit.edu/jrk/halide12">Decoupling Algorithms from Schedules for Easy Optimization of Image Processing Pipelines</a><br>
 Jonathan Ragan-Kelley, Andrew Adams, Sylvain Paris, Marc Levoy,<br>
 Saman Amarasinghe, Fr&eacute;do Durand<br>
-<em>Proc. ACM SIGGRAPH 2012</em><br>
+<em>ACM SIGGRAPH 2012</em><br>
 <br>
 
 </td></tr>
@@ -135,7 +148,7 @@ Andrew Adams, Eino-Ville Talvala, Sung Hee Park, David E. Jacobs,<br>
  Boris Ajdin, Natasha Gelfand, Jennifer Dolson, Daniel Vaquero,<br>
  Jongmin Baek, Marius Tico, Hendrik P. A. Lensch, Wojciech Matusik,<br>
  Kari Pulli, Mark Horowitz, Marc Levoy<br>
-<em>Proc. ACM SIGGRAPH 2010</em><br>
+<em>ACM SIGGRAPH 2010</em><br>
 <em>Reprinted in CACM November 2012</em><br>
 <br>
 
@@ -150,7 +163,7 @@ Natasha Gelfand, Andrew Adams, Sung Hee Park, Kari Pulli<br>
 <a href=http://graphics.stanford.edu/papers/permutohedral/>Fast High-Dimensional Filtering Using the Permutohedral Lattice</a><br>
 (See my <a href="thesis.pdf">dissertation</a> for more detail)<br>
 Andrew Adams, Jongmin Baek, Abe Davis<br>
-<em>Proc. Eurographics 2010</em><br>
+<em>Eurographics 2010</em><br>
 <em>Runner-up for <b>Best Paper</b></em><br>
 <br>
 
@@ -165,35 +178,35 @@ Jongmin Baek, Andrew Adams, Jennifer Dolson<br>
 
 
 <tr><td><br><img src="paper_thumbs/gkdtree.jpg"></td><td><br>
-<a href=http://graphics.stanford.edu/papers/gkdtrees/>Gaussian KD-Trees for 
+<a href=http://graphics.stanford.edu/papers/gkdtrees/>Gaussian KD-Trees for
 Fast High-Dimensional Filtering</a><br>
 (See my <a href="thesis.pdf">dissertation</a> for more detail and algorithmic improvements)<br>
 	Andrew Adams, Natasha Gelfand, Jennifer Dolson, Marc Levoy<br>
-	<em>Proc. ACM SIGGRAPH 2009</em>
+	<em>ACM SIGGRAPH 2009</em>
 	</td></tr>
 
 <tr><td><br><img src="paper_thumbs/vfa.jpg"></td><td><br>
 <a href=http://graphics.stanford.edu/papers/viewfinderalignment/>Viewfinder Alignment</a><br>
 Andrew Adams, Natasha Gelfand, Kari Pulli<br>
-<em>Proc. Eurographics 2008</em>
+<em>Eurographics 2008</em>
 </td></tr>
 
 <tr><td><br><img src="paper_thumbs/glcfa.jpg"></td><td><br>
 <a href=http://graphics.stanford.edu/papers/glcfa/>General Linear Cameras with Finite Aperture</a><br>
 Andrew Adams, Marc Levoy<br>
-<em>Proc. EGSR 2007</em>
+<em>EGSR 2007</em>
 </td></tr>
 
 <tr><td><br><img src="paper_thumbs/glare_removal.jpg"></td><td><br>
 <a href=http://graphics.stanford.edu/papers/glare_removal/>Veiling Glare in High Dynamic Range Imaging</a><br>
 Eino-Ville Talvala, Andrew Adams, Mark Horowitz, Marc Levoy<br>
-<em>Proc. ACM SIGGRAPH 2007</em>
+<em>ACM SIGGRAPH 2007</em>
 </td></tr>
 
 <tr><td><br><img src="paper_thumbs/microscopy.jpg"></td><td><br>
 <a href=http://graphics.stanford.edu/papers/lfmicroscope/>Light Field Microscopy</a><br>
 Marc Levoy, Ren Ng, Andrew Adams, Matthew Footer, Mark Horowitz<br>
-<em>Proc. ACM SIGGRAPH 2006</em>
+<em>ACM SIGGRAPH 2006</em>
 </td></tr>
 
 
@@ -202,7 +215,7 @@ Marc Levoy, Ren Ng, Andrew Adams, Matthew Footer, Mark Horowitz<br>
 High Performance Imaging Using Large Camera Arrays</a><br>
 Bennett Wilburn, Neel Joshi, Vaibhav Vaish, Eino-Ville Talvala, <br>
 Emilio Antunez, Adam Barth, Andrew Adams, Mark Horowitz, Marc Levoy<br>
-<em>Proc. ACM SIGGRAPH 2005</em>
+<em>ACM SIGGRAPH 2005</em>
 </td></tr>
 </table>
 
@@ -212,7 +225,7 @@ Emilio Antunez, Adam Barth, Andrew Adams, Mark Horowitz, Marc Levoy<br>
 <h3>Research Interests</h3>
 <p>
 
-I like photography and I like programming things. That's why digital cameras irritate me. They are quite capable computers internally, with various input devices, sensors, displays, CPUs, DSPs, etc. Yet you can't program them, and they just act like a film camera. You press the trigger, the shutter opens briefly, the sensor is exposed to light focused by the lens, some post-processing is done, and you get a picture. 
+I like photography and I like programming things. That's why digital cameras irritate me. They are quite capable computers internally, with various input devices, sensors, displays, CPUs, DSPs, etc. Yet you can't program them, and they just act like a film camera. You press the trigger, the shutter opens briefly, the sensor is exposed to light focused by the lens, some post-processing is done, and you get a picture.
 <p>
 It's time to move beyond this model of single-frame photography. This is not news - everyone in computational photography knows this. You can do wonderful things if you acquire a variety of data under different capture parameters, illuminations, and/or viewing directions, and then algorithmically combine these into the final representation. You can make <a href="http://cvlab.epfl.ch/~brown/autostitch/autostitch.html">panoramas</a> with a super-wide field of view, or take <a href="http://www.flickr.com/search/?q=hdr">high-dynamic-range images</a> you can view on a regular screen. With the right data you can even <a href="http://www.refocusimaging.com/gallery/">change the focus after-the-fact</a>, or do a <a href="http://photosynth.net/view.aspx?cid=9955c093-6276-44b6-b94a-121c53ae27b6">flyaround</a> of a landmark you and others have photographed.
 <p>
@@ -233,8 +246,8 @@ Every year we see a trickle of the most established of these algorithms make it 
 <h3>Teaching Interests</h3>
 <p>
 
-I know of no more enjoyable use of an idea than telling someone else about it. My first foray into teaching was as a section leader for <a href=http://www.cse.unsw.edu.au/~cs1711/>Higher Computing 1A</a> and <a href=http://www.cse.unsw.edu.au/~cs1721>Higher Computing 1B</a> at <a href=http://www.cse.unsw.edu.au/>UNSW</a>, teaching Haskell and C respectively to the advanced freshmen. My last class presented me with cake and 
-a certificate for <a href=Award.jpg>Inconceivable Achievement</a> for my 
+I know of no more enjoyable use of an idea than telling someone else about it. My first foray into teaching was as a section leader for <a href=http://www.cse.unsw.edu.au/~cs1711/>Higher Computing 1A</a> and <a href=http://www.cse.unsw.edu.au/~cs1721>Higher Computing 1B</a> at <a href=http://www.cse.unsw.edu.au/>UNSW</a>, teaching Haskell and C respectively to the advanced freshmen. My last class presented me with cake and
+a certificate for <a href=Award.jpg>Inconceivable Achievement</a> for my
 efforts. This is my favorite award. I don't even know how good it is (by definition).
 <p>
 I came to Stanford in 2004 and was a TA for <a href=http://graphics.stanford.edu/courses/cs248-05/>CS248 - Introduction to Computer Graphics</a> here in 2005, 2006, and 2007. In 2008 I had a chance to co-teach a graduate level computational photography course <a href=http://graphics.stanford.edu/courses/cs448a-08-spring/>CS448a</a> with <a href=http://graphics.stanford.edu/~levoy>Marc Levoy</a> and <a href=http://research.nokia.com/people/kari_pulli>Kari Pulli</a>, which was a lot of fun. For all this I was given two teaching awards - the Forsythe Teaching Award from the CS department, and the Centennial Teaching Assistant Award from the school of engineering.
@@ -267,7 +280,7 @@ as a post-doc working with Fredo Durand on fast image processing.
 I was born in Tarrytown, New York, to Australian parents who then moved back to Australia. I grew up there and returned to the US for my graduate degree. I'm an <a href="http://en.wikipedia.org/wiki/Anchor_baby">anchor baby</a>.
 
 <p>
-I keep all my <a href=http://picasaweb.google.com/andrew.b.adams>photos</a> online, if you wish to trawl through my life since I've owned a digital camera. Here are some of my favorites: 
+I keep all my <a href=http://picasaweb.google.com/andrew.b.adams>photos</a> online, if you wish to trawl through my life since I've owned a digital camera. Here are some of my favorites:
 
 <p align="center">
 <a href="photos/IMG_4920.jpg"><img src="photos/thumb_4920.jpg"></a>
