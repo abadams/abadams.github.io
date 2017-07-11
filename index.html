@@ -52,14 +52,13 @@ background-color:white;
 <img src=Me_smaller.jpg>
 </td>
 <td align=left>
-CS&nbsp;Postdoctoral&nbsp;Associate<br>
-32&nbsp;Vassar&nbsp;St&nbsp;D414<br>
-Cambridge, MA, 02139<br>
-abadams&nbsp;AT&nbsp;csail.mit.edu<br>
+Software&nbsp;Engineer<br>
+Google&nbsp;Research<br>
+andrew.b.adams&nbsp;AT&nbsp;gmail.com<br>
 <br>
-<a href="andrew-adams.pdf">Curriculum Vitae</a><br>
+<a href="http://github.com/abadams">GitHub</a>
 <br>
-<a href="thesis.pdf">Dissertation</a>
+<a href="https://scholar.google.com/citations?hl=en&user=B--edBUAAAAJ&view_op=list_works&sortby=pubdate">Google Scholar</a>
 </td>
 </tr>
 <tr><td colspan=2>
@@ -67,51 +66,37 @@ abadams&nbsp;AT&nbsp;csail.mit.edu<br>
 <br><br>
 
 <p>
-<h3>Code and Data</h3>
-<p>
-
-<table style="border:none; border-spacing:10px;">
-
-<tr><td><br><img src="paper_thumbs/agx.png" alt="AgX is the pseudo-chemical name given to silver halide agents used in film photography"></td><td><br>
-<a href="http://halide-lang.org/">Halide</a> <br>
-Writing fast image processing pipelines is hard, because you need to simultaneously optimize for parallelism and locality (memory bandwidth). This usually wrecks the modularity, portability, and readability of your code, because it involves fusing all your pipeline stages into one architecture-specific monolithic mess. Trying alternative optimizations is then very painful, because it requires rearranging huge chunks of code and then fixing the bugs you inevitably introduced.
-<p>
-Halide makes it easier to explore possible optimizations by separating the specification of the algorithm from the specification of the "schedule", which defines what gets computed when and where it is stored. Halide is described in <a href="http://people.csail.mit.edu/jrk/halide12">this SIGGRAPH 2012 paper</a>. The compiler is open source, and can found found <a href="http://halide-lang.org">here</a>. We welcome contributions and bug reports.
-</td></tr>
-
-<tr><td><br><img src="paper_thumbs/n900.jpg"></td><td><br>
-<a href="http://fcam.garage.maemo.org/">The FCam camera control API for the Nokia N900</a> <br>
-We think you should be able to program your camera. This API turns your Nokia N900 into a programmable camera. It replaces key kernel drivers and disables the existing user-space daemons that mess with the sensor settings behind your back. This lets you easily program your N900 to take exactly the shots you want at the maximum possible frame rate. We've used this API with success teaching grad students <a href="http://graphics.stanford.edu/courses/cs448a-10/">computational photography</a>, and it's the same API we use on the <a href="http://graphics.stanford.edu/projects/camera-2.0">Frankencamera</a>. The architecture behind this API is described in full in our <a href="http://graphics.stanford.edu/papers/fcam">SIGGRAPH 2010 paper</a>.
-</td></tr>
-
-<tr><td><br><img src="paper_thumbs/ImageStack.png"></td><td><br>
-<a href="http://code.google.com/p/imagestack">ImageStack</a> <br>
-ImageStack is a command-line stack calculator for images that I have been slowly building up. It's a swiss-army knife for computational photography, with resampling, image arithmetic, alignment, gradient-domain operators, a wide variety of efficient linear and non-linear filters, wavelet transforms, Fourier transforms, deconvolution operators, and even some light field operators. Thanks to the help of the students in <a href="http://www.stanford.edu/class/cs448f">CS448f</a> it also includes implementations of some recent SIGGRAPH papers. It's great in scripts, and you can also link to it as a library. Recently it has begun to include some metaprogramming tricks backported from Halide, so some routines are quite fast.
-</td></tr>
-
-<tr><td><br><img src="paper_thumbs/bilateral.jpg"></td><td><br>
-<u>Fast High-Dimensional Bilateral Filtering</u><br>
-If you're looking for CPU or CUDA implementations of the Gaussian KD-Tree or the permutohedral lattice you can find them at their paper webpages <a href="http://graphics.stanford.edu/papers/gkdtrees/">here</a> and <a href="http://graphics.stanford.edu/papers/permutohedral/">here</a> respectively. The CPU implementations have also been integrated into <a href="http://code.google.com/p/imagestack">ImageStack</a>, which you may find more convenient. My <a href="thesis.pdf">dissertation</a> contains simple annotated versions of the code as appendices.
-</td><tr>
-
-<tr><td><br><img src="paper_thumbs/aperture.jpg"></td><td><br>
-<a href="http://lightfield.stanford.edu/lfs.html">The Stanford Light Field Archive</a><br>
-This is our collection of light fields acquired with camera array, gantry, and light field microscope. Feel free to use any of the light fields on this page in your research (with credit). Also includes my <a href="http://lightfield.stanford.edu/aperture.html">light field viewing applet</a>. To capture your own similar light fields all you need is a camera and some <a href="http://lightfield.stanford.edu/images/lego_self_portrait_pinhole.jpg">lego</a>.
-</td></tr>
-
-<tr><td><br><img src="paper_thumbs/cs178.png"></td><td><br>
-<a href="http://graphics.stanford.edu/courses/cs178-10/applets/">Photography Applets</a><br>
-Nora Willett, <a href="http://kaytdek.trevorshp.com/">Katie Dektar</a>, <a href="http://graphics.stanford.edu/~levoy">Marc Levoy</a> and I made a range of applets to help teach concepts in photography for the digital photography course <a href="http://cs178.stanford.edu">CS178</a>. They explore topics in optics, color, and image processing.<p>
-If you like those, you may also enjoy my <a href="lenstoy.swf">Toy optical bench</a> applet. Drag the components in the upper left into the middle to place them. Shift-drag objects to rotate and scale them. Alt-drag objects to change their aspect ratio (this is how you change the power of a lens).
-</td></tr>
-</table>
-
-<br><br>
-
-<p>
 <h3>Publications</h3>
 <p>
 <table style="border:none; border-spacing:10px;">
+
+<tr><td><br><img src="paper_thumbs/par.png"></td><td><br>
+<a href="par.pdf">Parallel Associative Reductions in Halide</a><br>
+Patricia Suriana, Andrew Adams, Shoaib Kamil<br>
+<em>CGO 2017<em><br>
+<br>
+</td></tr>
+
+<tr><td><br><img src="paper_thumbs/hdrplus.jpg"></td><td><br>
+<a href="http://hdrplusdata.org/">Burst photography for high dynamic range and low-light imaging on mobile cameras</a><br>
+Samuel W Hasinoff, Dillon Sharlet, Ryan Geiss, Andrew Adams, Jonathan T Barron, Florian Kainz, Jiawen Chen, Marc Levoy<br>
+<em>ACM SIGGRAPH Asia 2016<em><br>
+<br>
+</td></tr>
+
+<tr><td><br><img src="paper_thumbs/bgu.jpg"></td><td><br>
+<a href="bgu.pdf">Bilateral guided upsampling</a><br>
+Jiawen Chen, Andrew Adams, Neil Wadhwa, Samuel W. Hasinoff<br>
+<em>ACM SIGGRAPH Asia 2016<em><br>
+<br>
+</td></tr>
+
+<tr><td><br><img src="paper_thumbs/agx.png"></td><td><br>
+<a href="http://graphics.cs.cmu.edu/projects/halidesched/">Automatically scheduling halide image processing pipelines</a><br>
+Ravi Teja Mullapudi, Andrew Adams, Dillon Sharlet, Jonathan Ragan-Kelley, Kayvon Fatahalian<br>
+<em>ACM SIGGRAPH 2016<em><br>
+<br>
+</td></tr>
 
 <script type="text/javascript">
 function defocus_start() {document.getElementById("defocus_thumb").src="paper_thumbs/defocus.gif"}
@@ -128,7 +113,7 @@ Jonathan T. Barron, Andrew Adams, YiChang Shih, Carlos Hern&aacutendez<br>
 
 <tr><td><br><img src="paper_thumbs/sculpt.jpg"></td><td><br>
 <u>Sculpting by Numbers</u><br>
-Alec Rivers, Andrew Adams, Fredo Durand<br>
+Alec Rivers, Andrew Adams, Fr&eacute;do Durand<br>
 <em>ACM SIGGRAPH Asia 2012<em><br>
 <br>
 </td></tr>
@@ -139,6 +124,12 @@ Jonathan Ragan-Kelley, Andrew Adams, Sylvain Paris, Marc Levoy,<br>
 Saman Amarasinghe, Fr&eacute;do Durand<br>
 <em>ACM SIGGRAPH 2012</em><br>
 <br>
+
+<b>Also see:</b><br>
+<a href="halide-pldi13.pdf">Halide: A Language and Compiler for Optimizing Parallelism,
+Locality, and Recomputation in Image Processing Pipelines</a><br>
+Jonathan Ragan-Kelley, Connelly Barnes, Andrew Adams, Sylvain Paris, Fr&eacute;do Durand, Saman Amarasinghe<br>
+<em>PLDI 2013</em><br>
 
 </td></tr>
 
@@ -221,85 +212,48 @@ Emilio Antunez, Adam Barth, Andrew Adams, Mark Horowitz, Marc Levoy<br>
 
 <br><br>
 
-<p>
-<h3>Research Interests</h3>
-<p>
-
-I like photography and I like programming things. That's why digital cameras irritate me. They are quite capable computers internally, with various input devices, sensors, displays, CPUs, DSPs, etc. Yet you can't program them, and they just act like a film camera. You press the trigger, the shutter opens briefly, the sensor is exposed to light focused by the lens, some post-processing is done, and you get a picture.
-<p>
-It's time to move beyond this model of single-frame photography. This is not news - everyone in computational photography knows this. You can do wonderful things if you acquire a variety of data under different capture parameters, illuminations, and/or viewing directions, and then algorithmically combine these into the final representation. You can make <a href="http://cvlab.epfl.ch/~brown/autostitch/autostitch.html">panoramas</a> with a super-wide field of view, or take <a href="http://www.flickr.com/search/?q=hdr">high-dynamic-range images</a> you can view on a regular screen. With the right data you can even <a href="http://www.refocusimaging.com/gallery/">change the focus after-the-fact</a>, or do a <a href="http://photosynth.net/view.aspx?cid=9955c093-6276-44b6-b94a-121c53ae27b6">flyaround</a> of a landmark you and others have photographed.
-<p>
-Every year we see a trickle of the most established of these algorithms make it into high-end consumer cameras. Why can't we program cameras to do these things ourselves? How are we supposed to do real-world photography research if we can't? There are three main roadblocks in the way. Surmounting them has defined my recent research.
-
-<ol>
-<li><b>Closed camera platforms</b>. Most cameras aren't freely programmable by third parties. This artificially limits their functionality. We can sidestep this roadblock somewhat by <a href="http://graphics.stanford.edu/projects/camera-2.0">making our own cameras</a> or by using programmable camera-phones. If we can demonstrate the benefits of an open camera platform maybe the conventional camera manufacturers will eventually see the light.
-<br><br>
-<li><b>Difficulty of camera control</b>. Most camera APIs are narrowly focused on film camera use-cases, and needlessly make impossible basic computational photography use-cases like alternating the exposure on every other frame. We attacked this problem by <a href="http://fcam.garage.maemo.org/">making our own camera architecture and API</a>. We think this architecture is the right way to think about camera control.
-<br><br>
-<li><b>Difficulty of image processing on embedded devices</b>. As computer scientists, we're used to programming in C and it being fast. This is no longer true. The rise of parallelism combined with the comparatively slow growth of memory bandwidth means that you can get 10x more speed that naive C by carefully optimizing for both. This is true on cameras, and also on conventional desktop cpus. Optimizing code in this way is a painful process. While you can peephole optimize individual routines to take advantage of parallelism, optimizing for locality involves fusing the operations that define your algorithm into one monolithic mess. Optimized libraries like IPP or fast implementations of OpenCV do the former but not that latter. We attacked this problem with <a href="http://halide-lang.org">Halide</a>, a domain-specific programming language that separates the intrinsic algorithm from its optimizations for a particular pipeline and a particular machine.
-</ol>
-<p>
-
-<br><br>
 
 <p>
-<h3>Teaching Interests</h3>
+<h3>Code and Data</h3>
 <p>
 
-I know of no more enjoyable use of an idea than telling someone else about it. My first foray into teaching was as a section leader for <a href=http://www.cse.unsw.edu.au/~cs1711/>Higher Computing 1A</a> and <a href=http://www.cse.unsw.edu.au/~cs1721>Higher Computing 1B</a> at <a href=http://www.cse.unsw.edu.au/>UNSW</a>, teaching Haskell and C respectively to the advanced freshmen. My last class presented me with cake and
-a certificate for <a href=Award.jpg>Inconceivable Achievement</a> for my
-efforts. This is my favorite award. I don't even know how good it is (by definition).
-<p>
-I came to Stanford in 2004 and was a TA for <a href=http://graphics.stanford.edu/courses/cs248-05/>CS248 - Introduction to Computer Graphics</a> here in 2005, 2006, and 2007. In 2008 I had a chance to co-teach a graduate level computational photography course <a href=http://graphics.stanford.edu/courses/cs448a-08-spring/>CS448a</a> with <a href=http://graphics.stanford.edu/~levoy>Marc Levoy</a> and <a href=http://research.nokia.com/people/kari_pulli>Kari Pulli</a>, which was a lot of fun. For all this I was given two teaching awards - the Forsythe Teaching Award from the CS department, and the Centennial Teaching Assistant Award from the school of engineering.
-<p>
-Marc and I then went on to design Stanford's first large undergraduate <a href=http://graphics.stanford.edu/courses/cs178-09>digital photography course</a> in spring 2009, for which I was also a TA. Stanford is a great place to photograph in the spring. Many of my students in that course are now much better photographers than I am, which is gratifying. After the course, two of them (Nora Willet and Katie Dektar) worked with us over the summer to make a set of educational <a href="http://graphics.stanford.edu/courses/cs178-10/applets/">photography applets</a> that help explain many of the concepts in the course.
-<p>
-In the fall of 2009 I created and taught <a href="http://www.stanford.edu/class/cs448f">CS448f</a> - a course on practical image processing for photography and vision with a focus on implementing recent cool stuff from SIGGRAPH. The students were great and I had a blast. For this course (among other things) I was awarded the <a href="http://studentaffairs.stanford.edu/registrar/everyone/gores">Walter J. Gores award</a>, which is Stanford's highest teaching award.
-<br><br>
-<p>
-<h3>Academic Career</h3>
-<p>
+<table style="border:none; border-spacing:10px;">
 
+<tr><td><br><img src="paper_thumbs/agx.png" alt="AgX is the pseudo-chemical name given to silver halide agents used in film photography"></td><td><br>
+<a href="http://halide-lang.org/">Halide</a> <br>
+Writing fast image processing pipelines is hard, because you need to simultaneously optimize for parallelism and locality (memory bandwidth). This usually wrecks the modularity, portability, and readability of your code, because it involves fusing all your pipeline stages into one architecture-specific monolithic mess. Trying alternative optimizations is then very painful, because it requires rearranging huge chunks of code and then fixing the bugs you inevitably introduced.
 <p>
-I did my undergraduate degree in Computer Science and Mathematics at
-the <a href=http://www.unsw.edu.au>University of New South Wales</a>
-in Australia, on a Science Faculty Scholarship. I graduated in 2003
-with first class honours and the University Medal in Computer
-Science. My undergraduate thesis was on polygon-rewriting grammars. It
-included enough recursive postscript that it proved impossible to ever
-convert to pdf. In 2004 I moved to Stanford to do a Masters in
-Computer Science, became absorbed in computational photography
-research, and completed a PhD under Marc Levoy in 2010. I'm now at MIT
-as a post-doc working with Fredo Durand on fast image processing.
+Halide makes it easier to explore possible optimizations by separating the specification of the algorithm from the specification of the "schedule", which defines what gets computed when and where it is stored. Halide is described in <a href="http://people.csail.mit.edu/jrk/halide12">this SIGGRAPH 2012 paper</a>. The compiler is open source, and can be found <a href="http://halide-lang.org">here</a>. We welcome contributions and bug reports.
+</td></tr>
+
+<tr><td><br><img src="paper_thumbs/ImageStack.png"></td><td><br>
+<a href="http://code.google.com/p/imagestack">ImageStack</a> <br>
+ImageStack is a command-line stack calculator for images that I have been slowly building up. It's a swiss-army knife for computational photography, with resampling, image arithmetic, alignment, gradient-domain operators, a wide variety of efficient linear and non-linear filters, wavelet transforms, Fourier transforms, deconvolution operators, and even some light field operators. Thanks to the help of the students in <a href="http://www.stanford.edu/class/cs448f">CS448f</a> it also includes implementations of some recent SIGGRAPH papers. It's great in scripts, and you can also link to it as a library. Recently it has begun to include some metaprogramming tricks backported from Halide, so some routines are quite fast.
+</td></tr>
+
+<tr><td><br><img src="paper_thumbs/n900.jpg"></td><td><br>
+<a href="http://fcam.garage.maemo.org/">The FCam camera control API for the Nokia N900</a> <br>
+We think you should be able to program your camera. This API turns your Nokia N900 into a programmable camera. It replaces key kernel drivers and disables the existing user-space daemons that mess with the sensor settings behind your back. This lets you easily program your N900 to take exactly the shots you want at the maximum possible frame rate. We've used this API with success teaching grad students <a href="http://graphics.stanford.edu/courses/cs448a-10/">computational photography</a>, and it's the same API we use on the <a href="http://graphics.stanford.edu/projects/camera-2.0">Frankencamera</a>. The architecture behind this API is described in full in our <a href="http://graphics.stanford.edu/papers/fcam">SIGGRAPH 2010 paper</a>.
+</td></tr>
+
+<tr><td><br><img src="paper_thumbs/bilateral.jpg"></td><td><br>
+<u>Fast High-Dimensional Bilateral Filtering</u><br>
+If you're looking for CPU or CUDA implementations of the Gaussian KD-Tree or the permutohedral lattice you can find them at their paper webpages <a href="http://graphics.stanford.edu/papers/gkdtrees/">here</a> and <a href="http://graphics.stanford.edu/papers/permutohedral/">here</a> respectively. The CPU implementations have also been integrated into <a href="http://code.google.com/p/imagestack">ImageStack</a>, which you may find more convenient. My <a href="thesis.pdf">dissertation</a> contains simple annotated versions of the code as appendices.
+</td><tr>
+
+<tr><td><br><img src="paper_thumbs/aperture.jpg"></td><td><br>
+<a href="http://lightfield.stanford.edu/lfs.html">The Stanford Light Field Archive</a><br>
+This is our collection of light fields acquired with camera array, gantry, and light field microscope. Feel free to use any of the light fields on this page in your research (with credit). Also includes my <a href="http://lightfield.stanford.edu/aperture.html">light field viewing applet</a>. To capture your own similar light fields all you need is a camera and some <a href="http://lightfield.stanford.edu/images/lego_self_portrait_pinhole.jpg">lego</a>.
+</td></tr>
+
+<tr><td><br><img src="paper_thumbs/cs178.png"></td><td><br>
+<a href="http://graphics.stanford.edu/courses/cs178-10/applets/">Photography Applets</a><br>
+Nora Willett, <a href="http://kaytdek.trevorshp.com/">Katie Dektar</a>, <a href="http://graphics.stanford.edu/~levoy">Marc Levoy</a> and I made a range of applets to help teach concepts in photography for the digital photography course <a href="http://cs178.stanford.edu">CS178</a>. They explore topics in optics, color, and image processing.<p>
+If you like those, you may also enjoy my <a href="lenstoy.swf">Toy optical bench</a> applet. Drag the components in the upper left into the middle to place them. Shift-drag objects to rotate and scale them. Alt-drag objects to change their aspect ratio (this is how you change the power of a lens).
+</td></tr>
+</table>
 
 <br><br>
-<p>
-<h3>Personal</h3>
-
-<p>
-I was born in Tarrytown, New York, to Australian parents who then moved back to Australia. I grew up there and returned to the US for my graduate degree. I'm an <a href="http://en.wikipedia.org/wiki/Anchor_baby">anchor baby</a>.
-
-<p>
-I keep all my <a href=http://picasaweb.google.com/andrew.b.adams>photos</a> online, if you wish to trawl through my life since I've owned a digital camera. Here are some of my favorites:
-
-<p align="center">
-<a href="photos/IMG_4920.jpg"><img src="photos/thumb_4920.jpg"></a>
-<a href="photos/IMG_5098.jpg"><img src="photos/thumb_5098.jpg"></a>
-<a href="photos/IMG_9939.jpg"><img src="photos/thumb_9939.jpg"></a>
-<a href="photos/IMG_8516.jpg"><img src="photos/thumb_8516.jpg"></a>
-<a href="photos/IMG_8646.jpg"><img src="photos/thumb_8646.jpg"></a>
-<a href="photos/IMG_9034.jpg"><img src="photos/thumb_9034.jpg"></a>
-<a href="photos/IMG_8271.jpg"><img src="photos/thumb_8271.jpg"></a>
-<a href="photos/IMG_8406.jpg"><img src="photos/thumb_8406.jpg"></a>
-<a href="photos/IMG_7745.jpg"><img src="photos/thumb_7745.jpg"></a>
-<a href="photos/IMG_4922.jpg"><img src="photos/thumb_4922.jpg"></a>
-</p>
-
-<p>
-There's a story behind each of these photos (except for the mournful
-basset hound - that's just how basset hounds look). Some of them were
-probably taken by my wife Elena (pictured left of the basset hound),
-who is a better photographer than I am.
 
 </td></tr></table>
 </body>
