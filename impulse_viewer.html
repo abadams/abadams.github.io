@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Impulse Response Viewer</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  body { font-family: sans-serif; margin: 20px; background: #f5f5f5; }
+  .controls { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .controls label { font-weight: bold; }
+  .controls select, .controls input { margin-left: 4px; }
+  #chart-container { background: white; border-radius: 8px; padding: 16px; max-width: 1000px; }
+  canvas { width: 100% !important; }
+  .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  #offset-slider { width: 300px; }
+  #animate-btn { padding: 4px 16px; cursor: pointer; }
+  #filter-info { margin: 16px 0; line-height: 1.8; }
+  #error-msg { color: red; margin-top: 8px; }
+</style>
+</head>
+<body>
+<h2>Gaussian Blur Impulse Response Viewer</h2>
+
+<div class="controls">
+  <label>Sigma: <input type="number" id="sigma" value="16" min="1" step="1" style="width:60px"></label>
+  <label>Interpolator order: <select id="up">
+    <option>2</option><option>3</option><option>4</option>
+  </select></label>
+  <label>Prefilter order: <select id="down">
+    <option>1</option><option>2</option><option>3</option><option>4</option>
+  </select></label>
+  <label>Factor: <select id="factor">
+    <option>2</option><option>4</option><option>8</option><option>16</option>
+  </select></label>
+</div>
+
+<div class="slider-row">
+  <label>Pixel offset: <input type="range" id="offset-slider" min="0" max="15" value="0">
+  <span id="offset-val">0</span></label>
+  <button id="animate-btn">Animate</button>
+</div>
+
+<div id="filter-info">
+  <div><strong>Prefilter:</strong> <span id="down-filter"></span> <span id="down-stats"></span></div>
+  <div><strong>Interpolator:</strong> <span id="up-filter"></span> <span id="up-stats"></span></div>
+  <div><strong>Low-res blur sigma:</strong><span id="sigma-lo"></span></div>
+  <div><strong>Low-res blur diameter:</strong> <span id="blur-diameter"></span></div>
+  <div><strong>Average multiplies per output pixel:</strong> <span id="muls-per-pixel"></span></div>
+  <div><strong>PSNR:</strong> <span id="psnr-display"></span></div>
+</div>
+
+<div id="chart-container">
+  <canvas id="chart"></canvas>
+</div>
+<div id="error-msg"></div>
+
+<h3>Pareto: Quality vs Throughput</h3>
+<div id="pareto-container" style="background:white;border-radius:8px;padding:16px;max-width:1000px;">
+  <canvas id="pareto-chart"></canvas>
+</div>
+
+<script>
+function convolve(a, b) {
+  const out = Array(a.length + b.length - 1).fill(0);
+  for (let i = 0; i < a.length; i++)
+    for (let j = 0; j < b.length; j++)
+      out[i + j] += a[i] * b[j];
+  return out;
+}
+
+function computeFilter(order, factor) {
+  const box = Array(factor).fill(1);
+  let kernel = box;
+  for (let i = 0; i < order - 1; i++) kernel = convolve(kernel, box);
+  for (let i = 0; i < order - 1; i++) kernel = convolve(kernel, [1, 1]);    
+  return kernel;
+}
+
+function filterVariance(kernel) {
+  const sum = kernel.reduce((a, b) => a + b, 0);
+  let mean = 0;
+  for (let i = 0; i < kernel.length; i++) mean += i * kernel[i] / sum;
+  let variance = 0;
+  for (let i = 0; i < kernel.length; i++) variance += (i - mean) * (i - mean) * kernel[i] / sum;
+  return variance;
+}
+
+function updateFilters() {
+  const sigma = parseFloat(document.getElementById('sigma').value);
+  const up = parseInt(document.getElementById('up').value);
+  const down = parseInt(document.getElementById('down').value);
+  const factor = parseInt(document.getElementById('factor').value);
+  const downKernel = computeFilter(down, factor);
+  const upKernel = computeFilter(up, factor);
+  const downVar = filterVariance(downKernel);
+  const upVar = filterVariance(upKernel);
+  document.getElementById('down-filter').textContent = '[' + downKernel.join(', ') + ']';
+  document.getElementById('down-stats').textContent = `(variance=${downVar.toFixed(3)}, σ=${Math.sqrt(downVar).toFixed(3)})`;
+  document.getElementById('up-filter').textContent = '[' + upKernel.join(', ') + ']';
+  document.getElementById('up-stats').textContent = `(variance=${upVar.toFixed(3)}, σ=${Math.sqrt(upVar).toFixed(3)})`;
+  const sigmaLo = Math.sqrt(Math.max(sigma * sigma - upVar - downVar, 1e-4)) / factor;
+  document.getElementById('sigma-lo').textContent = sigmaLo.toFixed(4);
+  const diameter = 2 * Math.ceil(4 * sigmaLo) + 1;
+  document.getElementById('blur-diameter').textContent = diameter;
+  const muls = down + down / factor + up + up / factor + 2 * diameter / (factor * factor);
+  document.getElementById('muls-per-pixel').textContent = muls.toFixed(2);
+}
+// Generate a normalized Gaussian kernel truncated at trunc*sigma
+function gaussianKernel(sigma, trunc) {
+  const radius = Math.ceil(trunc * sigma);
+  const size = 2 * radius + 1;
+  const kernel = new Array(size);
+  let sum = 0;
+  for (let i = 0; i < size; i++) {
+    const x = i - radius;
+    kernel[i] = Math.exp(-0.5 * x * x / (sigma * sigma));
+    sum += kernel[i];
+  }
+  for (let i = 0; i < size; i++) kernel[i] /= sum;
+  return kernel;
+}
+
+// Compute ground truth impulse response: a single Gaussian truncated at 4 sigma
+function computeGroundTruth(sigma) {
+  return gaussianKernel(sigma, 4);
+}
+
+// Compute approximate impulse response for given params.
+function computeApproximate(sigma, up, down, factor) {
+  const numPhases = 16;
+  const downKernel = computeFilter(down, factor);
+  const upKernel = computeFilter(up, factor);
+  const downVar = filterVariance(downKernel);
+  const upVar = filterVariance(upKernel);
+  const downSum = downKernel.reduce((a, b) => a + b, 0);
+  const upSum = upKernel.reduce((a, b) => a + b, 0);
+  const sigmaLo = Math.sqrt(Math.max(sigma * sigma - upVar - downVar, 1e-4)) / factor;
+  const loKernel = gaussianKernel(sigmaLo, 5);
+
+  const gt = computeGroundTruth(sigma);
+  const outLen = gt.length;
+  const inputLen = 8 * Math.ceil(sigma);
+  const center = 4 * Math.ceil(sigma);
+
+  const rows = [];
+  for (let p = 0; p < numPhases; p++) {
+    // Start with zeros, place impulse at center + p
+    let signal = new Array(inputLen).fill(0);
+    signal[center - p] = 1;
+
+    // Convolve with prefilter
+    signal = convolve(signal, downKernel);
+    for (let i = 0; i < signal.length; i++) signal[i] /= downSum;
+
+    // Subsample by factor
+    const subsampled = [];
+    for (let i = 0; i < signal.length; i += factor) {
+      subsampled.push(signal[i]);
+    }
+
+    // Convolve with low-res Gaussian
+    let blurred = convolve(subsampled, loKernel);
+
+    // Zero-fill by factor
+    const zerofilled = new Array((blurred.length - 1) * factor + 1).fill(0);
+    for (let i = 0; i < blurred.length; i++) {
+      zerofilled[i * factor] = blurred[i];
+    }
+
+    // Convolve with interpolator
+    let interpolated = convolve(zerofilled, upKernel);
+    for (let i = 0; i < interpolated.length; i++) interpolated[i] *= factor / upSum;
+
+    // Shift back by p to undo the impulse offset
+    const shifted = new Array(interpolated.length).fill(0);
+    for (let i = 0; i < interpolated.length; i++) {
+      const src = i - p;
+      if (src >= 0 && src < interpolated.length) shifted[i] = interpolated[src];
+    }
+
+    // Crop to middlemost outLen values
+    const cropStart = Math.floor((shifted.length - outLen + factor) / 2);
+    rows.push(shifted.slice(cropStart, cropStart + outLen));
+  }
+  return rows;
+}
+
+const ctx = document.getElementById('chart').getContext('2d');
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [
+      { label: 'Ground Truth', data: [], borderColor: 'rgba(54,162,235,1)', backgroundColor: 'rgba(54,162,235,0.1)', borderWidth: 2, pointRadius: 2, fill: true },
+      { label: 'Approximate', data: [], borderColor: 'rgba(255,99,132,1)', backgroundColor: 'rgba(255,99,132,0.1)', borderWidth: 2, pointRadius: 2, fill: true }
+    ]
+  },
+  options: {
+    animation: { duration: 0 },
+    scales: {
+      x: { title: { display: true, text: 'Pixel' }, min: undefined, max: undefined },
+      y: { title: { display: true, text: 'Weight' }, beginAtZero: true, min: undefined, max: undefined }
+    },
+    plugins: {
+      title: { display: true, text: '', font: { size: 14 } }
+    }
+  }
+});
+
+// Zoom state: null means fully zoomed out (use defaults)
+let zoomState = null; // { xMin, xMax, yMin, yMax }
+let defaultBounds = null; // { xMin, xMax, yMin, yMax } set after each data update
+
+function applyZoom() {
+  if (zoomState) {
+    chart.options.scales.x.min = zoomState.xMin;
+    chart.options.scales.x.max = zoomState.xMax;
+    chart.options.scales.y.min = zoomState.yMin;
+    chart.options.scales.y.max = zoomState.yMax;
+  } else if (defaultBounds) {
+    chart.options.scales.x.min = defaultBounds.xMin;
+    chart.options.scales.x.max = defaultBounds.xMax;
+    chart.options.scales.y.min = defaultBounds.yMin;
+    chart.options.scales.y.max = defaultBounds.yMax;
+  }
+  chart.update();
+}
+
+document.getElementById('chart').addEventListener('wheel', (e) => {
+  e.preventDefault();
+  if (!defaultBounds) return;
+
+  const rect = chart.canvas.getBoundingClientRect();
+  const xScale = chart.scales.x;
+  const yScale = chart.scales.y;
+
+  // Get data coordinates under cursor
+  const canvasX = e.clientX - rect.left;
+  const canvasY = e.clientY - rect.top;
+  const dataX = xScale.getValueForPixel(canvasX);
+  const dataY = yScale.getValueForPixel(canvasY);
+
+  const cur = zoomState || { ...defaultBounds };
+  const zoomFactor = e.deltaY < 0 ? 0.8 : 1.25; // scroll up = zoom in
+
+  // Zoom around cursor position
+  let xMin = dataX - (dataX - cur.xMin) * zoomFactor;
+  let xMax = dataX + (cur.xMax - dataX) * zoomFactor;
+  let yMin = dataY - (dataY - cur.yMin) * zoomFactor;
+  let yMax = dataY + (cur.yMax - dataY) * zoomFactor;
+
+  // Clamp to default bounds (max zoom out)
+  xMin = Math.max(xMin, defaultBounds.xMin);
+  xMax = Math.min(xMax, defaultBounds.xMax);
+  yMin = Math.max(yMin, defaultBounds.yMin);
+  yMax = Math.min(yMax, defaultBounds.yMax);
+
+  // If we've hit the default bounds, reset to null
+  if (xMin <= defaultBounds.xMin && xMax >= defaultBounds.xMax &&
+      yMin <= defaultBounds.yMin && yMax >= defaultBounds.yMax) {
+    zoomState = null;
+  } else {
+    zoomState = { xMin, xMax, yMin, yMax };
+  }
+  applyZoom();
+}, { passive: false });
+
+// Pan by dragging
+let panning = false;
+let panStart = { x: 0, y: 0 };
+let panBoundsStart = null;
+
+document.getElementById('chart').addEventListener('mousedown', (e) => {
+  if (e.button !== 0 || !defaultBounds) return;
+  panning = true;
+  panStart = { x: e.clientX, y: e.clientY };
+  panBoundsStart = { ...(zoomState || defaultBounds) };
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!panning) return;
+  const xScale = chart.scales.x;
+  const yScale = chart.scales.y;
+  // Convert pixel delta to data delta
+  const dxPx = e.clientX - panStart.x;
+  const dyPx = e.clientY - panStart.y;
+  const dxData = (panBoundsStart.xMax - panBoundsStart.xMin) * dxPx / (xScale.right - xScale.left);
+  const dyData = (panBoundsStart.yMax - panBoundsStart.yMin) * dyPx / (yScale.bottom - yScale.top);
+
+  let xMin = panBoundsStart.xMin - dxData;
+  let xMax = panBoundsStart.xMax - dxData;
+  let yMin = panBoundsStart.yMin + dyData;
+  let yMax = panBoundsStart.yMax + dyData;
+
+  // Clamp so we don't pan beyond default bounds
+  if (xMin < defaultBounds.xMin) { xMax += defaultBounds.xMin - xMin; xMin = defaultBounds.xMin; }
+  if (xMax > defaultBounds.xMax) { xMin -= xMax - defaultBounds.xMax; xMax = defaultBounds.xMax; }
+  if (yMin < defaultBounds.yMin) { yMax += defaultBounds.yMin - yMin; yMin = defaultBounds.yMin; }
+  if (yMax > defaultBounds.yMax) { yMin -= yMax - defaultBounds.yMax; yMax = defaultBounds.yMax; }
+
+  xMin = Math.max(xMin, defaultBounds.xMin);
+  xMax = Math.min(xMax, defaultBounds.xMax);
+  yMin = Math.max(yMin, defaultBounds.yMin);
+  yMax = Math.min(yMax, defaultBounds.yMax);
+
+  zoomState = { xMin, xMax, yMin, yMax };
+  applyZoom();
+});
+
+document.addEventListener('mouseup', () => { panning = false; });
+
+// Pareto chart
+const paretoCtx = document.getElementById('pareto-chart').getContext('2d');
+
+// Custom plugin to draw labels on Pareto-frontier points
+const paretoLabelPlugin = {
+  id: 'paretoLabels',
+  afterDraw(chart) {
+    if (!chart._paretoLabels) return;
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.font = '11px sans-serif';
+    ctx.fillStyle = '#333';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    for (const lbl of chart._paretoLabels) {
+      const meta = chart.getDatasetMeta(lbl.datasetIndex);
+      const pt = meta.data[lbl.index];
+      if (pt) ctx.fillText(lbl.text, pt.x + 6, pt.y - 4);
+    }
+    ctx.restore();
+  }
+};
+
+const paretoChart = new Chart(paretoCtx, {
+  type: 'scatter',
+  data: { datasets: [] },
+  options: {
+    animation: { duration: 0 },
+    scales: {
+      x: { title: { display: true, text: 'PSNR (dB)' } },
+      y: {
+        title: { display: true, text: 'Multiplies per pixel' },
+        ticks: {
+          callback: (value) => value > 0 ? (1 / value).toFixed(1) : ''
+        }
+      }
+    },
+    plugins: {
+      title: { display: true, text: 'Quality vs Throughput', font: { size: 14 } },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => `${ctx.raw.label}  (${(1/ctx.raw.y).toFixed(1)} muls/px, ${ctx.raw.x.toFixed(1)} dB)`
+        }
+      },
+      legend: { display: true }
+    }
+  },
+  plugins: [paretoLabelPlugin]
+});
+
+function computeMulsPerPixel(up, down, factor) {
+  const upKernel = computeFilter(up, factor);
+  const downKernel = computeFilter(down, factor);
+  const upVar = filterVariance(upKernel);
+  const downVar = filterVariance(downKernel);
+  const sigma = parseFloat(document.getElementById('sigma').value);
+  const sigmaLo = Math.sqrt(Math.max(sigma * sigma - upVar - downVar, 1e-4)) / factor;
+  const diameter = 2 * Math.ceil(4 * sigmaLo) + 1;
+  return down + down / factor + up + up / factor + 2 * diameter / (factor * factor);
+}
+
+// gt is a 1D kernel, ap is an array of rows (one per phase)
+function computePSNR(gt, ap) {
+  const gtMax = Math.max(...gt);
+  let mse = 0, count = 0;
+  for (let r = 0; r < ap.length; r++) {
+    for (let i = 0; i < Math.max(gt.length, ap[r].length); i++) {
+      const d = (gt[i] || 0) - (ap[r][i] || 0);
+      mse += d * d;
+      count++;
+    }
+  }
+  mse /= count;
+  return mse > 0 ? -10 * Math.log10(mse / (gtMax * gtMax)) : Infinity;
+}
+
+const UPS = [2, 3, 4];
+const DOWNS = [1, 2, 3, 4];
+const FACTORS = [2, 4, 8, 16];
+
+function updatePareto() {
+  const sigma = parseFloat(document.getElementById('sigma').value);
+  const gt = computeGroundTruth(sigma);
+
+  const points = [];
+  for (const up of UPS) {
+    for (const down of DOWNS) {
+      if (up < down) continue;
+      for (const factor of FACTORS) {
+        const ap = computeApproximate(sigma, up, down, factor);
+        const psnr = computePSNR(gt, ap);
+        const muls = computeMulsPerPixel(up, down, factor);
+        points.push({ psnr, throughput: 1 / muls, up, down, factor,
+          label: `u=${up} d=${down} f=${factor}` });
+      }
+    }
+  }
+
+  // Compute Pareto frontier: sorted by PSNR ascending, keep points with increasing throughput
+  points.sort((a, b) => a.psnr - b.psnr);
+  const frontier = [];
+  let bestThroughput = -Infinity;
+  for (let i = points.length - 1; i >= 0; i--) {
+    if (points[i].throughput >= bestThroughput) {
+      bestThroughput = points[i].throughput;
+      frontier.push(points[i]);
+    }
+  }
+  frontier.sort((a, b) => a.psnr - b.psnr);
+
+  const frontierSet = new Set(frontier);
+  const nonFrontier = points.filter(p => !frontierSet.has(p));
+
+  // Highlight currently selected point (canonicalize so u >= d)
+  let curUp = parseInt(document.getElementById('up').value);
+  let curDown = parseInt(document.getElementById('down').value);
+  const curFactor = parseInt(document.getElementById('factor').value);
+  if (curUp < curDown) { const tmp = curUp; curUp = curDown; curDown = tmp; }
+
+  const isSelected = (p) => p.up === curUp && p.down === curDown && p.factor === curFactor;
+
+  // Store points for click handling
+  paretoChart._allPoints = points;
+
+  paretoChart.data.datasets = [
+    {
+      label: 'Non-optimal',
+      data: nonFrontier.map(p => ({ x: p.psnr, y: p.throughput, label: p.label })),
+      backgroundColor: nonFrontier.map(p => isSelected(p) ? 'rgba(255,99,132,1)' : 'rgba(180,180,180,0.5)'),
+      pointRadius: nonFrontier.map(p => isSelected(p) ? 9 : 5)
+    },
+    {
+      label: 'Pareto frontier',
+      data: frontier.map(p => ({ x: p.psnr, y: p.throughput, label: p.label })),
+      backgroundColor: frontier.map(p => isSelected(p) ? 'rgba(255,99,132,1)' : 'rgba(54,162,235,0.8)'),
+      pointRadius: frontier.map(p => isSelected(p) ? 9 : 7),
+      showLine: true,
+      borderColor: 'rgba(54,162,235,0.4)',
+      borderWidth: 1,
+      fill: false
+    }
+  ];
+
+  // Set up labels for frontier points
+  paretoChart._paretoLabels = frontier.map((p, i) => ({
+    datasetIndex: 1, index: i, text: p.label
+  }));
+
+  paretoChart.update();
+}
+
+document.getElementById('pareto-chart').addEventListener('click', (e) => {
+  const elems = paretoChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
+  if (elems.length === 0) return;
+  const { datasetIndex, index } = elems[0];
+  const pt = paretoChart.data.datasets[datasetIndex].data[index];
+  if (!pt || !pt.label) return;
+  // Parse "u=2 d=1 f=4" format
+  const m = pt.label.match(/u=(\d+)\s+d=(\d+)\s+f=(\d+)/);
+  if (!m) return;
+  document.getElementById('up').value = m[1];
+  document.getElementById('down').value = m[2];
+  document.getElementById('factor').value = m[3];
+  updateFilters();
+  update();
+  updatePareto();
+});
+
+function update() {
+  const sigma = parseFloat(document.getElementById('sigma').value);
+  const up = parseInt(document.getElementById('up').value);
+  const down = parseInt(document.getElementById('down').value);
+  const factor = parseInt(document.getElementById('factor').value);
+  const offset = parseInt(document.getElementById('offset-slider').value);
+  document.getElementById('offset-val').textContent = offset;
+  document.getElementById('error-msg').textContent = '';
+
+  try {
+    const gt = computeGroundTruth(sigma);
+    const ap = computeApproximate(sigma, up, down, factor);
+    const apRow = ap[offset];
+    const len = Math.max(gt.length, apRow.length);
+    const labels = Array.from({length: len}, (_, i) => i);
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = gt;
+    chart.data.datasets[1].data = apRow;
+    const gtMax = Math.max(...gt);
+    defaultBounds = { xMin: 0, xMax: len - 1, yMin: 0, yMax: gtMax * 1.2 };
+    const psnr = computePSNR(gt, ap);
+    document.getElementById('psnr-display').textContent = `${psnr.toFixed(1)} dB`;
+    chart.options.plugins.title.text = `σ=${sigma}  up=${up}  down=${down}  factor=${factor}  offset=${offset}/16`;
+    applyZoom();
+  } catch (e) {
+    document.getElementById('error-msg').textContent = e.message;
+  }
+}
+
+document.querySelectorAll('select, #offset-slider, #sigma').forEach(el =>
+  el.addEventListener('input', () => { updateFilters(); update(); updatePareto(); })
+);
+
+let animating = false;
+let animTimer = null;
+document.getElementById('animate-btn').addEventListener('click', () => {
+  animating = !animating;
+  document.getElementById('animate-btn').textContent = animating ? 'Stop' : 'Animate';
+  if (animating) {
+    animTimer = setInterval(() => {
+      const slider = document.getElementById('offset-slider');
+      slider.value = (parseInt(slider.value) + 1) % 16;
+      update();
+    }, 250);
+  } else {
+    clearInterval(animTimer);
+  }
+});
+
+updateFilters();
+update();
+updatePareto();
+</script>
+</body>
+</html>
