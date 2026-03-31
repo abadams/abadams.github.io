@@ -19,17 +19,17 @@
 </style>
 </head>
 <body>
-<h2>Gaussian Blur Impulse Response Viewer</h2>
+<h2>Gaussian Blur via Resampling Impulse Response Viewer</h2>
 
 <div class="controls">
   <label>Sigma: <input type="number" id="sigma" value="16" min="1" step="1" style="width:60px"></label>
-  <label>Interpolator order: <select id="up">
-    <option>2</option><option>3</option><option>4</option>
-  </select></label>
-  <label>Prefilter order: <select id="down">
+  <label>Interpolator order (u): <select id="up">
     <option>1</option><option>2</option><option>3</option><option>4</option>
   </select></label>
-  <label>Factor: <select id="factor">
+  <label>Prefilter order (d): <select id="down">
+    <option>1</option><option>2</option><option>3</option><option>4</option>
+  </select></label>
+  <label>Factor (f): <select id="factor">
     <option>2</option><option>4</option><option>8</option><option>16</option>
   </select></label>
 </div>
@@ -386,7 +386,7 @@ function computePSNR(gt, ap) {
   return mse > 0 ? -10 * Math.log10(mse / (gtMax * gtMax)) : Infinity;
 }
 
-const UPS = [2, 3, 4];
+const UPS = [1, 2, 3, 4];
 const DOWNS = [1, 2, 3, 4];
 const FACTORS = [2, 4, 8, 16];
 
